@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use App\Models\Cabin;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,11 +19,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
+/*
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+*/
+        Admin::query()->updateOrCreate(
+            ['email' => 'admin@pine.local'],
+            [
+                'name' => 'Администратор',
+                'password' => Hash::make('change-me'),
+            ]
+        );
 
         Cabin::query()->updateOrCreate(
             ['name' => 'Домик у озера'],
