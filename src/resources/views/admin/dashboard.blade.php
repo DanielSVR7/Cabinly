@@ -19,7 +19,12 @@
 
     <section class="mb-5">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-            <h3 class="section-title mb-0">Домики</h3>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <h3 class="section-title mb-0">Домики</h3>
+                <a class="btn btn-sm btn-forest" href="{{ route('admin.cabins.create') }}">
+                    <i class="bi bi-plus-circle"></i> Добавить домик
+                </a>
+            </div>
             <span class="text-muted small">Всего: {{ $cabins->count() }}</span>
         </div>
         <div class="row g-4">
