@@ -18,6 +18,8 @@ Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])->name('adm
 
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/cabins/create', [AdminCabinController::class, 'create'])->name('cabins.create');
+    Route::post('/cabins', [AdminCabinController::class, 'store'])->name('cabins.store');
     Route::get('/cabins/{cabin}/edit', [AdminCabinController::class, 'edit'])->name('cabins.edit');
     Route::put('/cabins/{cabin}', [AdminCabinController::class, 'update'])->name('cabins.update');
     Route::put('/bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
