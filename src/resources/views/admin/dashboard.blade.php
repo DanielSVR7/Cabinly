@@ -28,7 +28,7 @@
     </div>
 
     <div class="card">
-        <h3 style="margin-top: 0;">Заявки на бронирование</h3>
+        <h3 style="margin-top: 0;">Бронирования</h3>
         <div style="display: grid; gap: 12px;">
             @forelse ($bookings as $booking)
                 <div style="border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
@@ -36,22 +36,21 @@
                     <span class="meta">({{ $booking->guest_email }})</span>
                     <div class="meta">Домик: {{ $booking->cabin->name ?? '—' }}</div>
                     <div class="meta">{{ $booking->check_in->format('d.m.Y') }} → {{ $booking->check_out->format('d.m.Y') }} | Гостей: {{ $booking->guests_count }}</div>
+                    <div class="meta">Статус: {{ $booking->status === 'confirmed' ? 'Подтверждено' : ($booking->status === 'cancelled' ? 'Отменено' : 'В ожидании') }}</div>
                     @if ($booking->guest_phone)
                         <div class="meta">Телефон: {{ $booking->guest_phone }}</div>
                     @endif
                     @if ($booking->notes)
                         <div class="meta">Пожелания: {{ $booking->notes }}</div>
                     @endif
-                    <form method="post" action="{{ route('admin.bookings.update', $booking) }}" style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
-                        @csrf
-                        @method('PUT')
-                        <select name="status" style="max-width: 200px;">
-                            <option value="pending" @selected($booking->status === 'pending')>Ожидает</option>
-                            <option value="confirmed" @selected($booking->status === 'confirmed')>Подтверждено</option>
-                            <option value="cancelled" @selected($booking->status === 'cancelled')>Отменено</option>
-                        </select>
-                        <button class="button" type="submit">Сохранить</button>
-                    </form>
+                    @if ($booking->status !== 'cancelled')
+                        <form method="post" action="{{ route('admin.bookings.update', $booking) }}" style="margin-top: 8px; display: inline-flex; gap: 8px; align-items: center;">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="status" value="cancelled">
+                            <button class="button" type="submit">Отменить бронь</button>
+                        </form>
+                    @endif
                 </div>
             @empty
                 <p class="meta">Пока нет заявок.</p>

@@ -24,6 +24,24 @@ class BookingController extends Controller
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
+        $hasConflict = Booking::query()
+            ->where('cabin_id', $cabin->id)
+            ->where('status', '!=', Booking::STATUS_CANCELLED)
+            ->where(function ($query) use ($validated) {
+                $query
+                    ->whereDate('check_in', '<', $validated['check_out'])
+                    ->whereDate('check_out', '>', $validated['check_in']);
+            })
+            ->exists();
+
+        if ($hasConflict) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'check_in' => 'Домик уже забронирован на выбранные даты. Выберите другой период.',
+                ]);
+        }
+
         Booking::create([
             'cabin_id' => $cabin->id,
             'guest_name' => $validated['guest_name'],
@@ -33,11 +51,11 @@ class BookingController extends Controller
             'check_out' => $validated['check_out'],
             'guests_count' => $validated['guests_count'],
             'notes' => $validated['notes'] ?? null,
-            'status' => Booking::STATUS_PENDING,
+            'status' => Booking::STATUS_CONFIRMED,
         ]);
 
         return redirect()
             ->route('cabins.show', $cabin)
-            ->with('success', 'Заявка получена. Мы свяжемся с вами для подтверждения бронирования.');
+            ->with('success', 'Бронирование подтверждено автоматически. Ждем вас в выбранные даты.');
     }
 }
