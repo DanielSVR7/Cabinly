@@ -3,27 +3,32 @@
 @section('title', 'Вход в админ-панель')
 
 @section('content')
-    <div class="card" style="max-width: 420px; margin: 0 auto;">
-        <h2 style="margin-top: 0;">Админ-панель</h2>
-        <p class="meta">Введите учетные данные администратора.</p>
+    <section class="soft-card p-4 p-lg-5 mx-auto" style="max-width: 480px;">
+        <div class="text-center mb-4">
+            <span class="brand-badge mb-3"><i class="bi bi-shield-lock"></i></span>
+            <h2 class="section-title h4 mb-1">Админ-панель</h2>
+            <p class="text-muted mb-0">Введите учетные данные администратора.</p>
+        </div>
 
         <form method="post" action="{{ route('admin.login.store') }}">
             @csrf
 
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" value="{{ old('email') }}" required>
-
-            <label for="password">Пароль</label>
-            <input id="password" name="password" type="password" required>
-
-            <label style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-weight: normal;">
-                <input type="checkbox" name="remember" value="1">
-                Запомнить меня
-            </label>
-
-            <div style="margin-top: 16px;">
-                <button class="button" type="submit">Войти</button>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email" class="form-control" value="{{ old('email') }}" required>
             </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input id="password" name="password" type="password" class="form-control" required>
+            </div>
+
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" name="remember" value="1" id="remember">
+                <label class="form-check-label" for="remember">Запомнить меня</label>
+            </div>
+
+            <button class="btn btn-forest w-100" type="submit">Войти</button>
         </form>
-    </div>
+    </section>
 @endsection

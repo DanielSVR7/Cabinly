@@ -50,12 +50,13 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm calendar__next">→</button>
                     </div>
                     <div class="calendar__grid"></div>
-                    <div class="calendar__hours"></div>
                     <div class="calendar__legend">
                         <span class="calendar__dot calendar__dot--free"></span> Свободно
                         <span class="calendar__dot calendar__dot--partial"></span> Частично занято
                         <span class="calendar__dot calendar__dot--busy"></span> Занято полностью
                     </div>
+                    <span class="calendar__dot"></span> Часы заезда
+                    <div class="calendar__hours"></div>
                 </div>
             </div>
 
@@ -65,7 +66,7 @@
                     @csrf
                     <div class="mb-3">
                         <label for="booking_type" class="form-label">Тариф</label>
-                        <select id="booking_type" name="booking_type" class="form-select" required>
+                        <select id="booking_type" name="booking_t   ype" class="form-select" required>
                             <option value="daily" @selected(old('booking_type', 'daily') === 'daily')>Посуточный (заезд 14:00, выезд 12:00)</option>
                             <option value="hourly" @selected(old('booking_type') === 'hourly')>Почасовой (с 14:00 до 23:00)</option>
                         </select>
@@ -162,13 +163,25 @@
             padding: 6px 0;
             border-radius: 8px;
             border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .calendar__cell:hover {
+            border-color: lightgray; 
+        }
+        .calendar__cell--active {
+            border-color: darkgray;
+            box-shadow: 0 0 0 0.5px lightgray;
+            font-weight: 500;
         }
         .calendar__cell--weekday {
+            pointer-events: none;
             font-weight: 600;
             color: #6c757d;
             padding: 4px 0;
         }
         .calendar__cell--empty {
+            pointer-events: none;
             opacity: 0.35;
         }
         .calendar__cell--busy {
@@ -218,7 +231,8 @@
             margin-right: 6px;
         }
         .calendar__dot--free {
-            background: rgba(25, 135, 84, 0.4);
+            background: transparent;
+            border: 1px solid #adb5bd;
         }
         .calendar__dot--partial {
             background: rgba(255, 193, 7, 0.6);
@@ -303,11 +317,23 @@
             const nextBtn = calendar.querySelector('.calendar__next');
             const weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
             const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-            const hourSlots = ['14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
+            const hourSlots = ['14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 
             let current = new Date();
             current.setHours(0, 0, 0, 0);
             let selectedDate = null;
+
+            function applyActiveDay() {
+                grid.querySelectorAll('.calendar__cell--active').forEach((el) => {
+                    el.classList.remove('calendar__cell--active');
+                });
+
+                const active = grid.querySelector(`.calendar__cell[data-date="${selectedDate}"]`);
+                if (active) {
+                    active.classList.add('calendar__cell--active');
+                }
+            }
+
 
             function formatDate(date) {
                 const year = date.getFullYear();
@@ -352,6 +378,7 @@
                     cell.dataset.date = iso;
                     cell.addEventListener('click', () => {
                         selectedDate = iso;
+                        applyActiveDay()
                         renderHours();
                     });
                     grid.appendChild(cell);
