@@ -23,8 +23,11 @@
             <label for="capacity">Вместимость</label>
             <input id="capacity" name="capacity" type="number" min="1" max="20" value="{{ old('capacity', $cabin->capacity) }}" required>
 
-            <label for="price_per_night">Цена за ночь</label>
+            <label for="price_per_night">Цена за сутки</label>
             <input id="price_per_night" name="price_per_night" type="number" min="0" step="0.01" value="{{ old('price_per_night', $cabin->price_per_night) }}" required>
+
+            <label for="price_per_hour">Цена за час</label>
+            <input id="price_per_hour" name="price_per_hour" type="number" min="0" step="0.01" value="{{ old('price_per_hour', $cabin->price_per_hour) }}" required>
 
             <label for="is_active">Статус</label>
             <select id="is_active" name="is_active" required>

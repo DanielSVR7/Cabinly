@@ -21,6 +21,7 @@ class AdminCabinController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'capacity' => ['required', 'integer', 'min:1', 'max:20'],
             'price_per_night' => ['required', 'numeric', 'min:0'],
+            'price_per_hour' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
 

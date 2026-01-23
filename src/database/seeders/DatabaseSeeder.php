@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Уютный домик с видом на воду и собственной террасой.',
                 'capacity' => 4,
                 'price_per_night' => 4200,
+                'price_per_hour' => 900,
                 'is_active' => true,
             ]
         );
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Просторный коттедж для семьи, рядом зона барбекю.',
                 'capacity' => 6,
                 'price_per_night' => 5600,
+                'price_per_hour' => 1200,
                 'is_active' => true,
             ]
         );
@@ -62,6 +64,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Идеально для романтического отдыха и прогулок.',
                 'capacity' => 2,
                 'price_per_night' => 3200,
+                'price_per_hour' => 700,
                 'is_active' => true,
             ]
         );
