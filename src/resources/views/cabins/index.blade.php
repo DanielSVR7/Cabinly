@@ -122,7 +122,10 @@
                         <p class="text-muted small mb-2">{{ $cabin->location ?? 'Турбаза "Сосновый берег"' }}</p>
                         <p class="text-muted mb-3">{{ $cabin->description ?? 'Уютный домик для отдыха на природе.' }}</p>
                         <div class="d-flex align-items-center justify-content-between">
-                            <div class="price-tag">{{ number_format($cabin->price_per_night, 0, '.', ' ') }} ₽ <span class="text-muted small">/ ночь</span></div>
+                            <div class="d-flex flex-column">
+                                <div class="price-tag">{{ number_format($cabin->price_per_night, 0, '.', ' ') }} ₽ <span class="text-muted small">/ ночь</span></div>
+                                <div class="text-muted small">{{ number_format($cabin->price_per_hour, 0, '.', ' ') }} ₽ / час</div>
+                            </div>
                             <a class="btn btn-forest" href="{{ route('cabins.show', $cabin) }}">Забронировать</a>
                         </div>
                     </div>

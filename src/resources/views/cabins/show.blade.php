@@ -33,7 +33,10 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mt-4">
-                        <div class="price-tag">{{ number_format($cabin->price_per_night, 0, '.', ' ') }} ₽ <span class="text-muted small">/ ночь</span></div>
+                        <div class="d-flex flex-column">
+                            <div class="price-tag">{{ number_format($cabin->price_per_night, 0, '.', ' ') }} ₽ <span class="text-muted small">/ ночь</span></div>
+                            <div class="text-muted small">{{ number_format($cabin->price_per_hour, 0, '.', ' ') }} ₽ / час</div>
+                        </div>
                         <span class="text-muted small"><i class="bi bi-star-fill text-warning"></i> 4.8 · 120 отзывов</span>
                     </div>
                 </div>
@@ -62,11 +65,11 @@
 
             <div class="soft-card p-4">
                 <h3 class="section-title h5 mb-3">Бронирование</h3>
-                <form method="post" action="{{ route('bookings.store', $cabin) }}">
+                <form method="post" action="{{ route('bookings.store', $cabin) }}" data-price-night="{{ $cabin->price_per_night }}" data-price-hour="{{ $cabin->price_per_hour }}">
                     @csrf
                     <div class="mb-3">
                         <label for="booking_type" class="form-label">Тариф</label>
-                        <select id="booking_type" name="booking_t   ype" class="form-select" required>
+                        <select id="booking_type" name="booking_type" class="form-select" required>
                             <option value="daily" @selected(old('booking_type', 'daily') === 'daily')>Посуточный (заезд 14:00, выезд 12:00)</option>
                             <option value="hourly" @selected(old('booking_type') === 'hourly')>Почасовой (с 14:00 до 23:00)</option>
                         </select>
@@ -130,6 +133,13 @@
                     <div class="mb-3">
                         <label for="notes" class="form-label">Пожелания</label>
                         <textarea id="notes" name="notes" rows="4" class="form-control">{{ old('notes') }}</textarea>
+                    </div>
+                    <div class="soft-card p-3 mb-3" data-booking-summary>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-muted">Стоимость</span>
+                            <strong data-booking-total>—</strong>
+                        </div>
+                        <div class="text-muted small mt-1" data-booking-details>Выберите даты, чтобы увидеть итог.</div>
                     </div>
                     <button class="btn btn-forest w-100" type="submit">Забронировать</button>
                     <p class="text-muted small mt-2 mb-0">Бронирование подтверждается автоматически.</p>
@@ -249,11 +259,145 @@
             const hourlyFields = document.querySelector('[data-hourly-fields]');
             const checkInDateHourly = document.querySelector('#check_in_date_hourly');
             const checkOutDateHidden = document.querySelector('#check_out_date_hourly');
+            const bookingForm = document.querySelector('form[data-price-night]');
+            const totalValue = document.querySelector('[data-booking-total]');
+            const totalDetails = document.querySelector('[data-booking-details]');
+            const checkInDate = document.querySelector('#check_in_date');
+            const checkOutDate = document.querySelector('#check_out_date');
+            const checkInTime = document.querySelector('#check_in_time');
+            const checkOutTime = document.querySelector('#check_out_time');
+            const pricePerNight = bookingForm ? Number.parseFloat(bookingForm.dataset.priceNight || '0') : 0;
+            const pricePerHour = bookingForm ? Number.parseFloat(bookingForm.dataset.priceHour || '0') : 0;
+            const priceFormatter = new Intl.NumberFormat('ru-RU', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+            });
+
+            function pluralizeHours(value) {
+                const remainder = value % 10;
+                const remainderHundred = value % 100;
+
+                if (remainderHundred >= 11 && remainderHundred <= 14) {
+                    return 'часов';
+                }
+                if (remainder === 1) {
+                    return 'час';
+                }
+                if (remainder >= 2 && remainder <= 4) {
+                    return 'часа';
+                }
+                return 'часов';
+            }
+
+            function pluralizeNights(value) {
+                const remainder = value % 10;
+                const remainderHundred = value % 100;
+
+                if (remainderHundred >= 11 && remainderHundred <= 14) {
+                    return 'ночей';
+                }
+                if (remainder === 1) {
+                    return 'ночь';
+                }
+                if (remainder >= 2 && remainder <= 4) {
+                    return 'ночи';
+                }
+                return 'ночей';
+            }
+
+            function updateTotal(summaryText, total) {
+                if (!totalValue || !totalDetails) {
+                    return;
+                }
+
+                if (!summaryText || Number.isNaN(total) || total <= 0) {
+                    totalValue.textContent = '—';
+                    totalDetails.textContent = 'Выберите даты, чтобы увидеть итог.';
+                    return;
+                }
+
+                totalValue.textContent = `${priceFormatter.format(total)} ₽`;
+                totalDetails.textContent = summaryText;
+            }
+
+            function calculateDailyTotal() {
+                if (!checkInDate || !checkOutDate) {
+                    return;
+                }
+
+                if (!checkInDate.value || !checkOutDate.value) {
+                    updateTotal('', 0);
+                    return;
+                }
+
+                const start = new Date(checkInDate.value + 'T00:00:00');
+                const end = new Date(checkOutDate.value + 'T00:00:00');
+
+                if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+                    updateTotal('', 0);
+                    return;
+                }
+
+                const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
+                if (diff <= 0) {
+                    updateTotal('', 0);
+                    return;
+                }
+
+                const total = diff * pricePerNight;
+                updateTotal(`${diff} ${pluralizeNights(diff)} × ${priceFormatter.format(pricePerNight)} ₽`, total);
+            }
+
+            function calculateHourlyTotal() {
+                if (!checkInDateHourly || !checkInTime || !checkOutTime) {
+                    return;
+                }
+
+                if (!checkInDateHourly.value || !checkInTime.value || !checkOutTime.value) {
+                    updateTotal('', 0);
+                    return;
+                }
+
+                const start = new Date(`${checkInDateHourly.value}T${checkInTime.value}:00`);
+                const end = new Date(`${checkInDateHourly.value}T${checkOutTime.value}:00`);
+
+                if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+                    updateTotal('', 0);
+                    return;
+                }
+
+                const diff = Math.round((end - start) / (1000 * 60 * 60));
+                if (diff <= 0) {
+                    updateTotal('', 0);
+                    return;
+                }
+
+                const total = diff * pricePerHour;
+                updateTotal(`${diff} ${pluralizeHours(diff)} × ${priceFormatter.format(pricePerHour)} ₽`, total);
+            }
+
+            function recalculateTotal() {
+                if (bookingType && bookingType.value === 'hourly') {
+                    calculateHourlyTotal();
+                } else {
+                    calculateDailyTotal();
+                }
+            }
 
             function syncHourlyDate() {
                 if (checkOutDateHidden && checkInDateHourly) {
                     checkOutDateHidden.value = checkInDateHourly.value;
                 }
+            }
+
+            function setInputsDisabled(container, isDisabled) {
+                if (!container) {
+                    return;
+                }
+
+                container.querySelectorAll('input, select, textarea').forEach((input) => {
+                    input.disabled = isDisabled;
+                });
             }
 
             function toggleBookingFields() {
@@ -276,7 +420,10 @@
                             }
                         });
                     }
+                    setInputsDisabled(dailyFields, true);
+                    setInputsDisabled(hourlyFields, false);
                     syncHourlyDate();
+                    recalculateTotal();
                 } else {
                     if (dailyFields) {
                         dailyFields.style.display = '';
@@ -290,6 +437,9 @@
                             input.required = false;
                         });
                     }
+                    setInputsDisabled(dailyFields, false);
+                    setInputsDisabled(hourlyFields, true);
+                    recalculateTotal();
                 }
             }
 
@@ -302,6 +452,24 @@
                 checkInDateHourly.addEventListener('change', syncHourlyDate);
                 syncHourlyDate();
             }
+
+            if (checkInDate) {
+                checkInDate.addEventListener('change', recalculateTotal);
+                checkInDate.addEventListener('input', recalculateTotal);
+            }
+            if (checkOutDate) {
+                checkOutDate.addEventListener('change', recalculateTotal);
+                checkOutDate.addEventListener('input', recalculateTotal);
+            }
+            if (checkInTime) {
+                checkInTime.addEventListener('change', recalculateTotal);
+                checkInTime.addEventListener('input', recalculateTotal);
+            }
+            if (checkOutTime) {
+                checkOutTime.addEventListener('change', recalculateTotal);
+                checkOutTime.addEventListener('input', recalculateTotal);
+            }
+            recalculateTotal();
 
             const calendar = document.querySelector('.calendar');
             if (!calendar) {
