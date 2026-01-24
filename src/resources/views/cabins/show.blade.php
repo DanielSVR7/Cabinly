@@ -3,7 +3,9 @@
 @section('title', $cabin->name)
 
 @php
-    $detailImage = 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=80';
+    $detailImage = $cabin->image_path
+        ? asset('storage/' . $cabin->image_path)
+        : 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=80';
 @endphp
 
 @section('content')

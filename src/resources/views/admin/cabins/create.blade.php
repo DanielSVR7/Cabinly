@@ -12,7 +12,7 @@
             <span class="pill"><i class="bi bi-house-add"></i> Создание</span>
         </div>
 
-        <form method="post" action="{{ route('admin.cabins.store') }}">
+        <form method="post" action="{{ route('admin.cabins.store') }}" enctype="multipart/form-data">
             @csrf
 
             <div class="row g-3">
@@ -27,6 +27,11 @@
                 <div class="col-12">
                     <label for="description" class="form-label">Описание</label>
                     <textarea id="description" name="description" rows="5" class="form-control">{{ old('description') }}</textarea>
+                </div>
+                <div class="col-12">
+                    <label for="image" class="form-label">Фото домика</label>
+                    <input id="image" name="image" type="file" class="form-control" accept="image/*">
+                    <div class="form-text">JPG/PNG/WebP, до 5 МБ.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="capacity" class="form-label">Вместимость</label>

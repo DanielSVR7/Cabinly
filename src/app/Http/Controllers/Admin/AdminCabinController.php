@@ -19,11 +19,16 @@ class AdminCabinController extends Controller
             'name' => ['required', 'string', 'max:120'],
             'location' => ['nullable', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'capacity' => ['required', 'integer', 'min:1', 'max:20'],
             'price_per_night' => ['required', 'numeric', 'min:0'],
             'price_per_hour' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('cabins', 'public');
+        }
 
         Cabin::create($validated);
 
@@ -43,11 +48,16 @@ class AdminCabinController extends Controller
             'name' => ['required', 'string', 'max:120'],
             'location' => ['nullable', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'capacity' => ['required', 'integer', 'min:1', 'max:20'],
             'price_per_night' => ['required', 'numeric', 'min:0'],
             'price_per_hour' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('cabins', 'public');
+        }
 
         $cabin->update($validated);
 

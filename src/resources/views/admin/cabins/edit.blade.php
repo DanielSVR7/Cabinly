@@ -12,7 +12,7 @@
             <span class="pill"><i class="bi bi-house-gear"></i> {{ $cabin->name }}</span>
         </div>
 
-        <form method="post" action="{{ route('admin.cabins.update', $cabin) }}">
+        <form method="post" action="{{ route('admin.cabins.update', $cabin) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -28,6 +28,11 @@
                 <div class="col-12">
                     <label for="description" class="form-label">Описание</label>
                     <textarea id="description" name="description" rows="5" class="form-control">{{ old('description', $cabin->description) }}</textarea>
+                </div>
+                <div class="col-12">
+                    <label for="image" class="form-label">Фото домика</label>
+                    <input id="image" name="image" type="file" class="form-control" accept="image/*">
+                    <div class="form-text">JPG/PNG/WebP, до 5 МБ.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="capacity" class="form-label">Вместимость</label>

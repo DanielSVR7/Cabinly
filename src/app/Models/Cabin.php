@@ -10,6 +10,7 @@ class Cabin extends Model
     protected $fillable = [
         'name',
         'description',
+        'image_path',
         'location',
         'capacity',
         'price_per_night',

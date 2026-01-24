@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Домики')
+@section('title', 'Сосновый берег')
 
 @php
     $fallbackImages = [
@@ -108,7 +108,9 @@
         @forelse ($cabins as $cabin)
             @php
                 $index = $loop->index % count($fallbackImages);
-                $image = $fallbackImages[$index];
+                $image = $cabin->image_path
+                    ? asset('storage/' . $cabin->image_path)
+                    : $fallbackImages[$index];
             @endphp
             <div class="col-md-6 col-lg-4">
                 <article class="card booking-card h-100">
