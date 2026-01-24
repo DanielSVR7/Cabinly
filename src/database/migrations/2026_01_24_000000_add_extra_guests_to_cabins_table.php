@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('cabins', function (Blueprint $table) {
+            $table->unsignedInteger('max_extra_guests')->default(0)->after('capacity');
+            $table->decimal('extra_guest_price_per_night', 10, 2)->default(0)->after('price_per_night');
+            $table->decimal('extra_guest_price_per_hour', 10, 2)->default(0)->after('price_per_hour');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('cabins', function (Blueprint $table) {
+            $table->dropColumn([
+                'max_extra_guests',
+                'extra_guest_price_per_night',
+                'extra_guest_price_per_hour',
+            ]);
+        });
+    }
+};

@@ -38,6 +38,10 @@
                     <input id="capacity" name="capacity" type="number" min="1" max="20" class="form-control" value="{{ old('capacity', 1) }}" required>
                 </div>
                 <div class="col-md-4">
+                    <label for="max_extra_guests" class="form-label">Макс. гостей сверх нормы</label>
+                    <input id="max_extra_guests" name="max_extra_guests" type="number" min="0" max="20" class="form-control" value="{{ old('max_extra_guests', 0) }}" required>
+                </div>
+                <div class="col-md-4">
                     <label for="price_per_night" class="form-label">Цена за сутки</label>
                     <div class="input-group">
                         <input id="price_per_night" name="price_per_night" type="number" min="0" step="0.01" class="form-control" value="{{ old('price_per_night', 0) }}" required>
@@ -48,6 +52,20 @@
                     <label for="price_per_hour" class="form-label">Цена за час</label>
                     <div class="input-group">
                         <input id="price_per_hour" name="price_per_hour" type="number" min="0" step="0.01" class="form-control" value="{{ old('price_per_hour', 0) }}" required>
+                        <span class="input-group-text">₽</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="extra_guest_price_per_night" class="form-label">Доплата за гостя/сутки</label>
+                    <div class="input-group">
+                        <input id="extra_guest_price_per_night" name="extra_guest_price_per_night" type="number" min="0" step="0.01" class="form-control" value="{{ old('extra_guest_price_per_night', 0) }}" required>
+                        <span class="input-group-text">₽</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="extra_guest_price_per_hour" class="form-label">Доплата за гостя/час</label>
+                    <div class="input-group">
+                        <input id="extra_guest_price_per_hour" name="extra_guest_price_per_hour" type="number" min="0" step="0.01" class="form-control" value="{{ old('extra_guest_price_per_hour', 0) }}" required>
                         <span class="input-group-text">₽</span>
                     </div>
                 </div>

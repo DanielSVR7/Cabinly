@@ -15,6 +15,8 @@ class BookingController extends Controller
             abort(404);
         }
 
+        $maxGuestsAllowed = min($cabin->capacity + $cabin->max_extra_guests, 20);
+
         $validated = $request->validate([
             'booking_type' => ['required', 'string', 'in:daily,hourly'],
             'guest_name' => ['required', 'string', 'max:120'],
@@ -24,7 +26,7 @@ class BookingController extends Controller
             'check_out_date' => ['required', 'date', 'after_or_equal:check_in_date'],
             'check_in_time' => ['nullable', 'date_format:H:i'],
             'check_out_time' => ['nullable', 'date_format:H:i'],
-            'guests_count' => ['required', 'integer', 'min:1', 'max:20'],
+            'guests_count' => ['required', 'integer', 'min:1', 'max:' . $maxGuestsAllowed],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 

@@ -21,8 +21,11 @@ class AdminCabinController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'image' => ['nullable', 'image', 'max:5120'],
             'capacity' => ['required', 'integer', 'min:1', 'max:20'],
+            'max_extra_guests' => ['required', 'integer', 'min:0', 'max:20'],
             'price_per_night' => ['required', 'numeric', 'min:0'],
             'price_per_hour' => ['required', 'numeric', 'min:0'],
+            'extra_guest_price_per_night' => ['required', 'numeric', 'min:0'],
+            'extra_guest_price_per_hour' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
 
@@ -50,8 +53,11 @@ class AdminCabinController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'image' => ['nullable', 'image', 'max:5120'],
             'capacity' => ['required', 'integer', 'min:1', 'max:20'],
+            'max_extra_guests' => ['required', 'integer', 'min:0', 'max:20'],
             'price_per_night' => ['required', 'numeric', 'min:0'],
             'price_per_hour' => ['required', 'numeric', 'min:0'],
+            'extra_guest_price_per_night' => ['required', 'numeric', 'min:0'],
+            'extra_guest_price_per_hour' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
 

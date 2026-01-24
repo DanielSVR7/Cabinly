@@ -114,7 +114,7 @@
                     <img src="{{ $image }}" alt="{{ $cabin->name }}">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="pill"><i class="bi bi-people"></i> до {{ $cabin->capacity }} гостей</span>
+                            <span class="pill"><i class="bi bi-people"></i> до {{ $cabin->capacity }} гостей + {{ $cabin->max_extra_guests }} сверх </span>
                             <span class="text-muted small"><i class="bi bi-star-fill text-warning"></i> 4.8</span>
                         </div>
                         <h3 class="h5 mb-1">{{ $cabin->name }}</h3>

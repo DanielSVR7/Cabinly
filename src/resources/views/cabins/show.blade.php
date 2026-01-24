@@ -67,7 +67,13 @@
 
             <div class="soft-card p-4">
                 <h3 class="section-title h5 mb-3">Бронирование</h3>
-                <form method="post" action="{{ route('bookings.store', $cabin) }}" data-price-night="{{ $cabin->price_per_night }}" data-price-hour="{{ $cabin->price_per_hour }}">
+                <form method="post" action="{{ route('bookings.store', $cabin) }}"
+                    data-price-night="{{ $cabin->price_per_night }}"
+                    data-price-hour="{{ $cabin->price_per_hour }}"
+                    data-capacity="{{ $cabin->capacity }}"
+                    data-max-extra-guests="{{ $cabin->max_extra_guests }}"
+                    data-extra-guest-night="{{ $cabin->extra_guest_price_per_night }}"
+                    data-extra-guest-hour="{{ $cabin->extra_guest_price_per_hour }}">
                     @csrf
                     <div class="mb-3">
                         <label for="booking_type" class="form-label">Тариф</label>
@@ -126,11 +132,22 @@
                     </div>
                     <div class="mb-3 mt-2">
                         <label for="guests_count" class="form-label">Количество гостей</label>
-                        <select id="guests_count" name="guests_count" class="form-select" required>
-                            @for ($i = 1; $i <= 8; $i++)
-                                <option value="{{ $i }}" @selected(old('guests_count', 1) == $i)>{{ $i }}</option>
-                            @endfor
-                        </select>
+                        <input
+                            id="guests_count"
+                            name="guests_count"
+                            type="number"
+                            min="1"
+                            max="{{ min($cabin->capacity + $cabin->max_extra_guests, 20) }}"
+                            class="form-control"
+                            value="{{ old('guests_count', $cabin->capacity) }}"
+                            required
+                        >
+                        <div class="form-text text-muted" data-extra-guests-hint>
+                            До {{ $cabin->capacity }} гостей включено в тариф. Доплата за каждого гостя сверх нормы —
+                            {{ number_format($cabin->extra_guest_price_per_night, 0, '.', ' ') }} ₽/сутки или
+                            {{ number_format($cabin->extra_guest_price_per_hour, 0, '.', ' ') }} ₽/час.
+                            Максимум доплаты — {{ $cabin->max_extra_guests }} гостей.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="notes" class="form-label">Пожелания</label>
@@ -270,6 +287,11 @@
             const checkOutTime = document.querySelector('#check_out_time');
             const pricePerNight = bookingForm ? Number.parseFloat(bookingForm.dataset.priceNight || '0') : 0;
             const pricePerHour = bookingForm ? Number.parseFloat(bookingForm.dataset.priceHour || '0') : 0;
+            const capacity = bookingForm ? Number.parseInt(bookingForm.dataset.capacity || '0', 10) : 0;
+            const maxExtraGuests = bookingForm ? Number.parseInt(bookingForm.dataset.maxExtraGuests || '0', 10) : 0;
+            const extraGuestNight = bookingForm ? Number.parseFloat(bookingForm.dataset.extraGuestNight || '0') : 0;
+            const extraGuestHour = bookingForm ? Number.parseFloat(bookingForm.dataset.extraGuestHour || '0') : 0;
+            const guestsInput = document.querySelector('#guests_count');
             const priceFormatter = new Intl.NumberFormat('ru-RU', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
@@ -322,6 +344,28 @@
                 totalDetails.textContent = summaryText;
             }
 
+            function getGuestsCount() {
+                if (!guestsInput) {
+                    return 1;
+                }
+
+                const value = Number.parseInt(guestsInput.value || '1', 10);
+                if (Number.isNaN(value) || value < 1) {
+                    return 1;
+                }
+
+                return value;
+            }
+
+            function getExtraGuests() {
+                const guests = getGuestsCount();
+                if (guests <= capacity) {
+                    return 0;
+                }
+
+                return Math.min(guests - capacity, maxExtraGuests);
+            }
+
             function calculateDailyTotal() {
                 if (!checkInDate || !checkOutDate) {
                     return;
@@ -346,8 +390,17 @@
                     return;
                 }
 
-                const total = diff * pricePerNight;
-                updateTotal(`${diff} ${pluralizeNights(diff)} × ${priceFormatter.format(pricePerNight)} ₽`, total);
+                const extraGuests = getExtraGuests();
+                const baseTotal = diff * pricePerNight;
+                const extraTotal = diff * extraGuests * extraGuestNight;
+                const total = baseTotal + extraTotal;
+                const summary = [`${diff} ${pluralizeNights(diff)} × ${priceFormatter.format(pricePerNight)} ₽`];
+
+                if (extraGuests > 0 && extraGuestNight > 0) {
+                    summary.push(`доплата ${extraGuests} × ${priceFormatter.format(extraGuestNight)} ₽`);
+                }
+
+                updateTotal(summary.join(' + '), total);
             }
 
             function calculateHourlyTotal() {
@@ -374,8 +427,17 @@
                     return;
                 }
 
-                const total = diff * pricePerHour;
-                updateTotal(`${diff} ${pluralizeHours(diff)} × ${priceFormatter.format(pricePerHour)} ₽`, total);
+                const extraGuests = getExtraGuests();
+                const baseTotal = diff * pricePerHour;
+                const extraTotal = diff * extraGuests * extraGuestHour;
+                const total = baseTotal + extraTotal;
+                const summary = [`${diff} ${pluralizeHours(diff)} × ${priceFormatter.format(pricePerHour)} ₽`];
+
+                if (extraGuests > 0 && extraGuestHour > 0) {
+                    summary.push(`доплата ${extraGuests} × ${priceFormatter.format(extraGuestHour)} ₽`);
+                }
+
+                updateTotal(summary.join(' + '), total);
             }
 
             function recalculateTotal() {
@@ -470,6 +532,10 @@
             if (checkOutTime) {
                 checkOutTime.addEventListener('change', recalculateTotal);
                 checkOutTime.addEventListener('input', recalculateTotal);
+            }
+            if (guestsInput) {
+                guestsInput.addEventListener('change', recalculateTotal);
+                guestsInput.addEventListener('input', recalculateTotal);
             }
             recalculateTotal();
 

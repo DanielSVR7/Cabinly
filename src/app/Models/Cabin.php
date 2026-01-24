@@ -13,8 +13,11 @@ class Cabin extends Model
         'image_path',
         'location',
         'capacity',
+        'max_extra_guests',
         'price_per_night',
         'price_per_hour',
+        'extra_guest_price_per_night',
+        'extra_guest_price_per_hour',
         'is_active',
     ];
 
@@ -22,6 +25,8 @@ class Cabin extends Model
         'is_active' => 'boolean',
         'price_per_night' => 'decimal:2',
         'price_per_hour' => 'decimal:2',
+        'extra_guest_price_per_night' => 'decimal:2',
+        'extra_guest_price_per_hour' => 'decimal:2',
     ];
 
     public function bookings(): HasMany
