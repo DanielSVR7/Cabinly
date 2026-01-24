@@ -6,15 +6,47 @@ use App\Models\Booking;
 use App\Models\Cabin;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\Request;
 
 class CabinController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $cabins = Cabin::query()
+        $query = Cabin::query()
             ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
+
+        $checkIn = $request->date('check_in');
+        $checkOut = $request->date('check_out');
+
+        if ($checkIn && $checkOut && $checkOut->greaterThanOrEqualTo($checkIn)) {
+            $rangeStart = $checkIn->copy()->startOfDay();
+            $rangeEnd = $checkOut->copy()->endOfDay();
+
+            $query->whereDoesntHave('bookings', function ($bookingQuery) use ($checkIn, $checkOut, $rangeStart, $rangeEnd) {
+                $bookingQuery
+                    ->where('status', '!=', Booking::STATUS_CANCELLED)
+                    ->where(function ($overlapQuery) use ($checkIn, $checkOut, $rangeStart, $rangeEnd) {
+                        $overlapQuery
+                            ->where(function ($dailyQuery) use ($checkIn, $checkOut) {
+                                $dailyQuery
+                                    ->whereNotNull('check_in')
+                                    ->whereNotNull('check_out')
+                                    ->where('check_in', '<=', $checkOut)
+                                    ->where('check_out', '>=', $checkIn);
+                            })
+                            ->orWhere(function ($hourlyQuery) use ($rangeStart, $rangeEnd) {
+                                $hourlyQuery
+                                    ->whereNotNull('check_in_at')
+                                    ->whereNotNull('check_out_at')
+                                    ->where('check_in_at', '<=', $rangeEnd)
+                                    ->where('check_out_at', '>=', $rangeStart);
+                            });
+                    });
+            });
+        }
+
+        $cabins = $query->get();
 
         return view('cabins.index', compact('cabins'));
     }

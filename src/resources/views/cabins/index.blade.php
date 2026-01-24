@@ -27,35 +27,32 @@
             </div>
             <div class="col-lg-5">
                 <div class="soft-card p-3">
-                    <div class="row g-2">
+                    <form class="row g-2" method="GET" action="{{ route('cabins.index') }}">
                         <div class="col-6">
-                            <label class="form-label small text-muted">Заезд</label>
-                            <input type="date" class="form-control" value="{{ now()->format('Y-m-d') }}">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label small text-muted">Выезд</label>
-                            <input type="date" class="form-control" value="{{ now()->addDays(2)->format('Y-m-d') }}">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label small text-muted">Гости</label>
-                            <select class="form-select">
-                                @for ($i = 1; $i <= 6; $i++)
-                                    <option>{{ $i }} гостей</option>
-                                @endfor
-                            </select>
+                            <label class="form-label small text-muted" for="check-in">Заезд</label>
+                            <input
+                                type="date"
+                                id="check-in"
+                                name="check_in"
+                                class="form-control"
+                                value="{{ request('check_in', now()->format('Y-m-d')) }}"
+                            >
                         </div>
                         <div class="col-6">
-                            <label class="form-label small text-muted">Тип</label>
-                            <select class="form-select">
-                                <option>Все</option>
-                                <option>Домик</option>
-                                <option>Глэмпинг</option>
-                            </select>
+                            <label class="form-label small text-muted" for="check-out">Выезд</label>
+                            <input
+                                type="date"
+                                id="check-out"
+                                name="check_out"
+                                class="form-control"
+                                value="{{ request('check_out', now()->addDays(2)->format('Y-m-d')) }}"
+                            >
                         </div>
-                        <div class="col-12">
-                            <button class="btn btn-forest w-100">Найти</button>
+                        <div class="col-12 d-grid gap-2">
+                            <button class="btn btn-forest w-100" type="submit">Найти</button>
+                            <a class="btn btn-outline-secondary w-100" href="{{ route('cabins.index') }}">Сбросить фильтр</a>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
