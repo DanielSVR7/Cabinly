@@ -134,7 +134,7 @@
                     <li class="nav-item"><a class="nav-link" href="#features">Преимущества</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contacts">Контакты</a></li>
                     <li class="nav-item d-flex align-items-center text-muted small">
-                        <i class="bi bi-telephone me-2"></i> +7 (845) 126-04-93
+                        <i class="bi bi-telephone me-2"></i> +7 (927) 621-43-83
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-forest" href="{{ route('cabins.index') }}">Забронировать</a>
@@ -165,10 +165,10 @@
         <div class="mt-5 pt-4 border-top footer-note" id="contacts">
             <div class="row gy-3 align-items-center">
                 <div class="col-md-8">
-                    <strong>Турбаза "Сосновый берег"</strong> · Саратовская область · Приезд с 16:00, выезд до 12:00
+                    <strong>Турбаза "Сосновый берег"</strong> · Энгельс, Саратовская область
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <i class="bi bi-envelope me-2"></i>hello@pinebay.example
+                    <i class="bi bi-envelope me-2"></i>hello@pinebay.ru
                 </div>
             </div>
         </div>

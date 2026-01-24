@@ -15,7 +15,7 @@
     <section class="hero mb-4">
         <div class="row align-items-center gy-4">
             <div class="col-lg-7">
-                <span class="pill mb-3"><i class="bi bi-geo-alt"></i> Саратовская область · берег Волги</span>
+                <span class="pill mb-3"><i class="bi bi-geo-alt"></i> Энгельс, Саратовская область</span>
                 <h1 class="section-title display-6 mb-3">Забронировать номер</h1>
                 <p class="text-muted mb-4">Лёгкое бронирование домиков и глэмпингов. Выберите даты, количество гостей и идеальный формат отдыха.</p>
                 <div class="d-flex flex-wrap gap-2">
