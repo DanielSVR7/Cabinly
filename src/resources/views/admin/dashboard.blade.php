@@ -79,9 +79,6 @@
                         $statusClass = $booking->status === 'confirmed'
                             ? 'text-bg-success'
                             : ($booking->status === 'cancelled' ? 'text-bg-secondary' : 'text-bg-warning');
-                        $bookingTypeLabel = $booking->booking_type === 'hourly' ? 'Почасовой' : 'Посуточный';
-                        $checkInTime = $booking->check_in_time ?? ($booking->booking_type === 'hourly' ? '14:00' : '14:00');
-                        $checkOutTime = $booking->check_out_time ?? ($booking->booking_type === 'hourly' ? '23:00' : '12:00');
                     @endphp
                     <div class="border rounded-4 p-3 p-lg-4 mb-3">
                         <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
@@ -97,14 +94,7 @@
                                     <i class="bi bi-calendar3 me-1"></i>{{ $booking->check_in->format('d.m.Y') }} → {{ $booking->check_out->format('d.m.Y') }}
                                 </div>
                                 <div class="text-muted small mb-1">
-                                    <i class="bi bi-receipt me-1"></i>{{ $bookingTypeLabel }} тариф
-                                </div>
-                                <div class="text-muted small mb-1">
-                                    <i class="bi bi-clock me-1"></i>Заезд: {{ $checkInTime }}, выезд: {{ $checkOutTime }}
-                                </div>
-                                <div class="text-muted small mb-1">
-                                    <i class="bi bi-tag me-1"></i>
-                                    Тариф: {{ $booking->booking_type === 'hourly' ? 'Почасовой' : 'Посуточный' }}
+                                    <i class="bi bi-tag me-1"></i>Тариф: {{ $booking->booking_type === 'hourly' ? 'Почасовой' : 'Посуточный' }}
                                 </div>
                                 @if ($booking->check_in_at || $booking->check_out_at)
                                     <div class="text-muted small mb-1">
