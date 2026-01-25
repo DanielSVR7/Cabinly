@@ -8,14 +8,9 @@ use Illuminate\Http\Request;
 
 class AdminCabinController extends Controller
 {
-    public function create()
+    private function rules(): array
     {
-        return view('admin.cabins.create');
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
+        return [
             'name' => ['required', 'string', 'max:120'],
             'location' => ['nullable', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
@@ -27,7 +22,17 @@ class AdminCabinController extends Controller
             'extra_guest_price_per_night' => ['required', 'numeric', 'min:0'],
             'extra_guest_price_per_hour' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
-        ]);
+        ];
+    }
+
+    public function create()
+    {
+        return view('admin.cabins.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate($this->rules());
 
         if ($request->hasFile('image')) {
             $validated['image_path'] = $request->file('image')->store('cabins', 'public');
@@ -47,19 +52,7 @@ class AdminCabinController extends Controller
 
     public function update(Request $request, Cabin $cabin)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'location' => ['nullable', 'string', 'max:120'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'image' => ['nullable', 'image', 'max:5120'],
-            'capacity' => ['required', 'integer', 'min:1', 'max:20'],
-            'max_extra_guests' => ['required', 'integer', 'min:0', 'max:20'],
-            'price_per_night' => ['required', 'numeric', 'min:0'],
-            'price_per_hour' => ['required', 'numeric', 'min:0'],
-            'extra_guest_price_per_night' => ['required', 'numeric', 'min:0'],
-            'extra_guest_price_per_hour' => ['required', 'numeric', 'min:0'],
-            'is_active' => ['required', 'boolean'],
-        ]);
+        $validated = $request->validate($this->rules());
 
         if ($request->hasFile('image')) {
             $validated['image_path'] = $request->file('image')->store('cabins', 'public');
