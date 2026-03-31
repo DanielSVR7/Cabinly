@@ -1,27 +1,141 @@
 @extends('layouts.app')
 
-@section('title', 'Домики')
+@section('title', 'Сосновый берег')
+
+@php
+    $fallbackImages = [
+        'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1200&q=80'
+    ];
+@endphp
 
 @section('content')
-    <div class="card" style="margin-bottom: 24px;">
-        <h2 style="margin-top: 0;">Доступные домики</h2>
-        <p class="meta">Выберите домик и отправьте заявку на бронирование. Мы уточним детали и подтвердим бронь.</p>
+    <section class="hero mb-4">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <span class="pill mb-3"><i class="bi bi-geo-alt"></i> Энгельс, Саратовская область</span>
+                <h1 class="section-title display-6 mb-3">Забронировать номер</h1>
+                <p class="text-muted mb-4">Лёгкое бронирование домиков и глэмпингов. Выберите даты, количество гостей и идеальный формат отдыха.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="category-pill">Все категории</span>
+                    <span class="category-pill">Глэмпинг</span>
+                    <span class="category-pill">С панорамным видом</span>
+                    <span class="category-pill">Семейные</span>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="soft-card p-3">
+                    <form class="row g-2" method="GET" action="{{ route('cabins.index') }}">
+                        <div class="col-6">
+                            <label class="form-label small text-muted" for="check-in">Заезд</label>
+                            <input
+                                type="date"
+                                id="check-in"
+                                name="check_in"
+                                class="form-control"
+                                value="{{ request('check_in', now()->format('Y-m-d')) }}"
+                            >
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small text-muted" for="check-out">Выезд</label>
+                            <input
+                                type="date"
+                                id="check-out"
+                                name="check_out"
+                                class="form-control"
+                                value="{{ request('check_out', now()->addDays(2)->format('Y-m-d')) }}"
+                            >
+                        </div>
+                        <div class="col-12 d-grid gap-2">
+                            <button class="btn btn-forest w-100" type="submit">Найти</button>
+                            <a class="btn btn-outline-secondary w-100" href="{{ route('cabins.index') }}">Сбросить фильтр</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-4" id="features">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="soft-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-water"></i>
+                        <strong>Первая линия</strong>
+                    </div>
+                    <p class="text-muted mb-0">Домики у воды, приватные террасы и панорамные виды.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="soft-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-fire"></i>
+                        <strong>Все включено</strong>
+                    </div>
+                    <p class="text-muted mb-0">Камин, мангал, завтраки и уютные зоны отдыха.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="soft-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-wifi"></i>
+                        <strong>Связь</strong>
+                    </div>
+                    <p class="text-muted mb-0">Wi‑Fi, парковка, охрана и быстрый заезд 24/7.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h2 class="section-title h4 mb-1">Доступные домики</h2>
+            <p class="text-muted mb-0">Выберите домик и отправьте заявку на бронирование.</p>
+        </div>
+        <div class="d-none d-md-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm">Сначала популярные</button>
+            <button class="btn btn-outline-secondary btn-sm">Сначала выгодные</button>
+        </div>
     </div>
 
-    <div class="grid">
+    <div class="row g-4">
         @forelse ($cabins as $cabin)
-            <article class="card">
-                <span class="badge">Вместимость: {{ $cabin->capacity }}</span>
-                <h3>{{ $cabin->name }}</h3>
-                <p class="meta">{{ $cabin->location ?? 'Турбаза "Сосновый берег"' }}</p>
-                <p>{{ $cabin->description ?? 'Уютный домик для отдыха на природе.' }}</p>
-                <p class="price">{{ number_format($cabin->price_per_night, 0, '.', ' ') }} ₽ / ночь</p>
-                <a class="button" href="{{ route('cabins.show', $cabin) }}">Посмотреть и забронировать</a>
-            </article>
+            @php
+                $index = $loop->index % count($fallbackImages);
+                $image = $cabin->image_path
+                    ? asset('storage/' . $cabin->image_path)
+                    : $fallbackImages[$index];
+            @endphp
+            <div class="col-md-6 col-lg-4">
+                <article class="card booking-card h-100">
+                    <img src="{{ $image }}" alt="{{ $cabin->name }}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="pill"><i class="bi bi-people"></i> до {{ $cabin->capacity }} гостей + {{ $cabin->max_extra_guests }} сверх </span>
+                            <span class="text-muted small"><i class="bi bi-star-fill text-warning"></i> 4.8</span>
+                        </div>
+                        <h3 class="h5 mb-1">{{ $cabin->name }}</h3>
+                        <p class="text-muted small mb-2">{{ $cabin->location ?? 'Турбаза "Сосновый берег"' }}</p>
+                        <p class="text-muted mb-3">{{ $cabin->description ?? 'Уютный домик для отдыха на природе.' }}</p>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex flex-column">
+                                <div class="price-tag">{{ number_format($cabin->price_per_night, 0, '.', ' ') }} ₽ <span class="text-muted small">/ ночь</span></div>
+                                <div class="text-muted small">{{ number_format($cabin->price_per_hour, 0, '.', ' ') }} ₽ / час</div>
+                            </div>
+                            <a class="btn btn-forest" href="{{ route('cabins.show', $cabin) }}">Забронировать</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
         @empty
-            <div class="card">
-                <h3>Пока нет домиков</h3>
-                <p class="meta">Добавьте домики через панель администратора или сидер.</p>
+            <div class="col-12">
+                <div class="soft-card p-4 text-center">
+                    <h3 class="h5">Пока нет домиков</h3>
+                    <p class="text-muted mb-0">Добавьте домики через панель администратора или сидер.</p>
+                </div>
             </div>
         @endforelse
     </div>

@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use App\Models\Cabin;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,11 +19,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
+/*
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+*/
+        Admin::query()->updateOrCreate(
+            ['email' => 'admin@pine.local'],
+            [
+                'name' => 'Администратор',
+                'password' => Hash::make('change-me'),
+            ]
+        );
 
         Cabin::query()->updateOrCreate(
             ['name' => 'Домик у озера'],
@@ -30,6 +40,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Уютный домик с видом на воду и собственной террасой.',
                 'capacity' => 4,
                 'price_per_night' => 4200,
+                'price_per_hour' => 900,
                 'is_active' => true,
             ]
         );
@@ -41,6 +52,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Просторный коттедж для семьи, рядом зона барбекю.',
                 'capacity' => 6,
                 'price_per_night' => 5600,
+                'price_per_hour' => 1200,
                 'is_active' => true,
             ]
         );
@@ -52,6 +64,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Идеально для романтического отдыха и прогулок.',
                 'capacity' => 2,
                 'price_per_night' => 3200,
+                'price_per_hour' => 700,
                 'is_active' => true,
             ]
         );
